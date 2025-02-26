@@ -1,6 +1,8 @@
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -103,7 +105,7 @@ public class Password {
     public static HashMap<String, Boolean> checkPasswordsList(ArrayList<String> passwords) {
 
         HashMap<String, Boolean> resultat = new HashMap<>();
-        for(String password : passwords){
+        for (String password : passwords) {
             resultat.put(password, isStrongPassword(password));
         }
         return resultat;
@@ -123,9 +125,31 @@ public class Password {
      */
     public static String generatePassword(int nbCar) {
 
-        // Code here
+        String upperCase = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+        String lowerCase = "abcdefghijklmnopqrstuvwxyz";
+        String digits = "0123456789";
+        String specialChars = "!@#$^&*()-_=+";
 
-        return null;
+        SecureRandom random = new SecureRandom();
+
+        List<Character> password = new ArrayList<>();
+        password.add(upperCase.charAt(random.nextInt(upperCase.length())));
+        password.add(lowerCase.charAt(random.nextInt(lowerCase.length())));
+        password.add(digits.charAt(random.nextInt(digits.length())));
+        password.add(specialChars.charAt(random.nextInt(specialChars.length())));
+
+        String allChar = upperCase + lowerCase + digits + specialChars;
+        for (int i = 4; i < nbCar; i++) {
+            password.add(allChar.charAt(random.nextInt(allChar.length())));
+        }
+
+        Collections.shuffle(password);
+
+        StringBuilder passwordSB = new StringBuilder();
+        for (char c : password) {
+            passwordSB.append(c);
+        }
+        return passwordSB.toString();
     }
 
     public static void main(String[] args) {
