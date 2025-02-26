@@ -43,7 +43,7 @@ public class Password {
         for (int i = 0; i < 1000000; i++) {
             String tryPassword = String.format("%06d", i);
             String tryHash = hashPassword(tryPassword);
-            if (tryHash == targetHash) {
+            if (tryHash.equals(targetHash)) {
                 return tryPassword;
             }
         }
@@ -65,8 +65,29 @@ public class Password {
      * @return true if the password is strong, false otherwise
      */
     public static boolean isStrongPassword(String password) {
-
-        // Code here
+        int n = password.length();
+        if (n < 12) {
+            return false;
+        }
+        boolean thereIsDigit = false;
+        boolean thereIsUppercase = false;
+        boolean thereIsLowercase = false;
+        Character character;
+        for (int i = 0; i <= n - 1; i++) {
+            character = password.charAt(i);
+            if (Character.isDigit(character)) {
+                thereIsDigit = true;
+            } else if (Character.isUpperCase(character)) {
+                thereIsUppercase = true;
+            } else if (Character.isLowerCase(character)) {
+                thereIsLowercase = true;
+            } else if (Character.isWhitespace(character)) {
+                return false;
+            }
+        }
+        if (thereIsDigit && thereIsLowercase && thereIsUppercase) {
+            return true;
+        }
 
         return false;
     }
