@@ -5,20 +5,21 @@ import java.util.Objects;
 /**
  * Represents an Author.
  */
-public class Author {
+public class Author extends Person {
 
     // Attributes
-    private String name;
-    private int age;
     private String nationality;
 
     /**
      * Constructs a new Book object.
      */
     public Author(String name, int age, String nationality) {
-        this.name = name;
-        this.age = age;
+        super(name, age);
         this.nationality = nationality;
+    }
+
+    public Author(String name) {
+        super(name);
     }
 
     public String getName() {

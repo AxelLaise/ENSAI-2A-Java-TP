@@ -4,47 +4,60 @@ import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 /**
  * Represents a library.
  */
 public class Library {
     // Attributes
     private String name;
-    private List<Book> books;
+    private List<Item> items;
+    private List<Loan> activeLoans;
+    private List<Loan> completedLoans;
 
     /**
      * Constructs a new Library object.
      */
-    public Library(String name, List<Book> books) {
+    public Library(String name, List<Item> items, List<Loan> activeLoans, List<Loan> completedLoans) {
         this.name = name;
-        this.books = books;
+        this.items = items;
+        this.activeLoans = activeLoans;
+        this.completedLoans = completedLoans;
+    }
+
+    public Library(String name) {
+        this.name = name;
+        this.items = new ArrayList<>();
+        this.activeLoans = new ArrayList<>();
+        this.completedLoans = new ArrayList<>();
     }
 
     /**
-     * Adds a book to the library’s collection
+     * Adds an item to the library’s collection
      */
-    public void addBook(Book book) {
-        books.add(book);
+    public void addItem(Item item) {
+        items.add(item);
     }
 
     /**
      * Print all books of the library
      */
-    public void displayBook() {
-        if (books.size() == 0){
-            System.out.println("There is no book in the library");
-        }
-        else{for (int i=0; i<books.size(); i+=1 ){
-                Book book = books.get(i);
-                System.out.println(book.toString());
-        }
+    public void displayItem() {
+        if (items.size() == 0) {
+            System.out.println("There is no item in the library");
+        } else {
+            for (Item item : items) {
+                System.out.println(item.toString());
+            }
         }
     }
 
-        /**
+    /**
      * Loads books from a CSV file and adds them to the library.
      * 
      * @param filePath The path to the CSV file containing book data.
@@ -79,7 +92,7 @@ public class Library {
                     }
                     Book book = new Book(isbn, title, author, year, pageCount);
 
-                    this.addIem(book);
+                    this.addItem(book);
                 }
             }
         } catch (
@@ -87,5 +100,58 @@ public class Library {
         IOException e) {
             System.err.println("Error reading the file: " + e.getMessage());
         }
+    }
+
+    public Loan findActiveLoanForItem(Item item) {
+        for (Loan loan : activeLoans) {
+            if (loan.getItem() == item) {
+                return loan;
+            }
+        }
+        return null;
+    }
+
+    public List<Loan> getActiveLoans() {
+        return activeLoans;
+    }
+
+    public List<Book> getBooksByAuthor(Author author) {
+        List<Book> books = new ArrayList<>();
+        for (Item item : items) {
+            if (item instanceof Book) {
+                Book book = (Book) item;
+                if (author.equals(book.getAuthor())) {
+                    books.add(book);
+                }
+            }
+        }
+        return books;
+    }
+
+    public boolean loanItem(Item item, Student student) {
+        if (findActiveLoanForItem(item) != null) {
+            return false;
+        }
+        Date date = new Date(System.currentTimeMillis());
+        Loan nLoan = new Loan(item, student, date);
+        activeLoans.add(nLoan);
+        return true;
+    }
+
+    public boolean renderItem(Item item) {
+        for (Loan loan : activeLoans) {
+            if (loan.getItem() == item) {
+                Date date = new Date(System.currentTimeMillis());
+                loan.setReturnDate(date);
+                activeLoans.remove(loan);
+                completedLoans.add(loan);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public void displayActiveLoans() {
+        System.out.println(activeLoans);
     }
 }
